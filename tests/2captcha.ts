@@ -6,8 +6,7 @@ import solver from '../src/solvers/2captcha';
 	const url = "";
 
 	const s = new solver(key);
-	let r1 = s.reCaptchaV2(googleKey, url);
-	let r2 = s.reCaptchaV2(googleKey, url);
+	let r1 = await s.reCaptchaV2(googleKey, url);
 
-	Promise.all([r1, r2]);
+	console.log(r1);
 })();

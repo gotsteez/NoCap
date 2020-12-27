@@ -78,6 +78,11 @@ export default class Client {
 				let res = await this.fetchResponse(id);
 				text = res;
 			} catch (err) {
+				console.log({
+					name: err.name,
+					instance: err instanceof CaptchaNotReady
+				});
+
 				if (err instanceof CaptchaNotReady) {
 					await delay(5000);
 				} else {
@@ -120,8 +125,8 @@ export default class Client {
 			}
 		});
 
-		if (resp.body.status === 0 && resp.body.request in Object.keys(errorTranslation)) {
-			throw new errorTranslation[resp.body.request];
+		if (resp.body.status === 0) {
+			throw new errorTranslation[resp.body.request]();
 		};
 
 		return resp.body.request;
