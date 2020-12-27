@@ -78,11 +78,6 @@ export default class Client {
 				let res = await this.fetchResponse(id);
 				text = res;
 			} catch (err) {
-				console.log({
-					name: err.name,
-					instance: err instanceof CaptchaNotReady
-				});
-
 				if (err instanceof CaptchaNotReady) {
 					await delay(5000);
 				} else {
