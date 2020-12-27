@@ -1,5 +1,6 @@
 import got, { Got } from 'got';
 import delay from '../utils/delay';
+import errors, { CaptchaNotReady } from '../errors';
 
 interface Options {
 	timeout: number;
@@ -12,6 +13,31 @@ interface CaptchaOptions {
 	pageurl?: string;
 	invisible?: string;
 }
+
+const errorTranslation = {
+	"ERROR_WRONG_USER_KEY": errors.MalformedUserKey,
+	"ERROR_KEY_DOES_NOT_EXIST": errors.KeyDoesNotExist,
+	"ERROR_ZERO_BALANCE": errors.InsufficientFunds,
+	"ERROR_PAGEURL": errors.UndefinedPageURL,
+	"ERROR_NO_SLOT_AVAILABLE": errors.ServiceBusy,
+	"ERROR_ZERO_CAPTCHA_FILESIZE": errors.ZeroImageFileSize,
+	"ERROR_TOO_BIG_CAPTCHA_FILESIZE": errors.ImageTooLarge,
+	"ERROR_WRONG_FILE_EXTENSION": errors.UnsupportedFileExtension,
+	"ERROR_IMAGE_TYPE_NOT_SUPPORTED": errors.ImageTypeNotSupported,
+	"ERROR_UPLOAD": errors.UploadError,
+	"ERROR_IP_NOT_ALLOWED": errors.IPNotAllowed,
+	"IP_BANNED": errors.IPBanned,
+	"ERROR_BAD_TOKEN_OR_PAGEURL": errors.BadTokenOrPageURL,
+	"ERROR_GOOGLEKEY": errors.WrongGoogleKey,
+	"ERROR_CAPTCHAIMAGE_BLOCKED": errors.BlockedImage,
+	"TOO_MANY_BAD_IMAGES": errors.TooManyBadImages,
+	"MAX_USER_TURN": errors.MaxRequests,
+	"ERROR_BAD_PARAMETERS": errors.BadParameters,
+	"CAPCHA_NOT_READY": errors.CaptchaNotReady,
+	"ERROR_CAPTCHA_UNSOLVABLE": errors.UnsolvableCaptcha,
+	"ERROR_WRONG_CAPTCHA_ID": errors.WrongCaptchaID,
+	"ERROR_TOKEN_EXPIRED": errors.TokenExpired,
+};
 
 export default class Client {
 	options: Options;
@@ -42,20 +68,21 @@ export default class Client {
 		};
 
 		const id = await this.upload(options);
-		console.log(`Created task for ${id}`);
 		
 		let text = "";
 
 		await delay(this.options.polling);
 
 		while (text === "") {
-			let res = await this.fetchResponse(id);
-
-			if (res === "CAPCHA_NOT_READY") {
-				console.log(`${id} not ready`);
-				await delay(this.options.polling);
-			} else {
+			try {
+				let res = await this.fetchResponse(id);
 				text = res;
+			} catch (err) {
+				if (err instanceof CaptchaNotReady) {
+					await delay(5000);
+				} else {
+					throw err;
+				};
 			};
 		};
 
@@ -86,18 +113,17 @@ export default class Client {
 			request: string,
 		};
 
-		try {
-			const resp = await this.client.get<response>("https://2captcha.com/res.php", {
-				searchParams: {
-					action: 'get',
-					id: id,
-				}
-			});
+		const resp = await this.client.get<response>("https://2captcha.com/res.php", {
+			searchParams: {
+				action: 'get',
+				id: id,
+			}
+		});
 
-			return resp.body.request;
-		} catch (err) {
-			console.log(err);
-			throw err;
+		if (resp.body.status === 0) {
+			throw new errorTranslation[resp.body.request]();
 		};
+
+		return resp.body.request;
 	};
 };
