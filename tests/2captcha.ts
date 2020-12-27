@@ -1,9 +1,9 @@
 import solver from '../src/solvers/2captcha';
 
 (async () => {
-	const key = "KEY";
+	const key = "";
 	const googleKey = "";
-	const url = "url";
+	const url = "";
 
 	const s = new solver(key);
 	let r1 = s.reCaptchaV2(googleKey, url);
