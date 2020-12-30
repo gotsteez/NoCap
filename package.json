@@ -2,7 +2,7 @@
   "name": "node-nocap",
   "version": "0.1.0",
   "description": "NodeJS implementation of multiple captcha solving services that return the same errors and formatted responses.",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "repository": "https://github.com/zMrKrabz/NoCap.git",
   "author": "zMrKrabz <anhardy381@gmail.com>",
   "license": "MIT",
@@ -20,9 +20,10 @@
     "typescript": "^4.1.3"
   },
   "scripts": {
-    "build": "npx tsc && cp -r ./src/public ./dist/src"
+    "prepublish": "tsc",
+    "build": "tsc && cp -r ./src/public ./dist/src"
   },
-  "type": "module",
+  "types": "dist/index.d.ts",
   "tags": [
     "node",
     "capmonster",
