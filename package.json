@@ -7,6 +7,18 @@
   "author": "zMrKrabz <anhardy381@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "got": "^11.8.1"
+    "@types/cors": "^2.8.9",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "got": "^11.8.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.9",
+    "@types/uuid": "^8.3.0"
+  },
+  "scripts": {
+    "build": "npx tsc && cp -r ./src/public ./dist/src"
   }
 }
