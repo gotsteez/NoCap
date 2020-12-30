@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Captcha Harvester</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <script
       src="https://www.google.com/recaptcha/api.js?onload=getCaptcha&render=explicit"
       async
@@ -8,7 +9,9 @@
     ></script>
   </head>
   <body>
-    <div class="captcha" id="captchaDiv"></div>
+    <center>
+      <div class="captcha" id="captchaDiv"></div>
+    </center>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -52,8 +55,6 @@
 
           const captcha = await resp.json();
           currentActiveCaptchaID = captcha.id;
-          console.log("here");
-          console.log({ currentActiveCaptchaID });
 
           let form = document.createElement("form");
           form.action = "/submit";
@@ -62,7 +63,7 @@
           node.appendChild(form);
 
           grecaptcha.render("captchaForm", {
-            sitekey: "6LeoeSkTAAAAAA9rkZs5oS82l69OEYjKRZAiKdaF",
+            sitekey: captcha.googleKey,
             callback: "submit",
           });
         } catch (err) {
