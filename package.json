@@ -21,7 +21,8 @@
   },
   "scripts": {
     "prepublish": "tsc && cp -r ./src/public ./dist/src",
-    "build": "tsc && cp -r ./src/public ./dist/src"
+    "build": "tsc && cp -r ./src/public ./dist/src",
+    "prepare": "yarn build"
   },
   "types": "dist/index.d.ts",
   "tags": [
