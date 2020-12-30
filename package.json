@@ -1,6 +1,6 @@
 {
   "name": "node-nocap",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "NodeJS implementation of multiple captcha solving services that return the same errors and formatted responses.",
   "main": "dist/index.js",
   "repository": "https://github.com/zMrKrabz/NoCap.git",
