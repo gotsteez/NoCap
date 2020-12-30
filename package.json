@@ -20,5 +20,6 @@
   },
   "scripts": {
     "build": "npx tsc && cp -r ./src/public ./dist/src"
-  }
+  },
+  "type": "module"
 }
