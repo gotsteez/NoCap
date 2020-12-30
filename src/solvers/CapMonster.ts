@@ -1,6 +1,7 @@
 import got, { Got } from 'got';
 import errors, { CaptchaNotReady } from '../errors';
 import delay from '../utils/delay';
+import { Proxy, Options, CaptchaClient } from '../utils/types';
 
 const errorTranslation = {
 	"ERROR_KEY_DOES_NOT_EXIST": errors.KeyDoesNotExist,
@@ -13,19 +14,6 @@ const errorTranslation = {
 	"ERROR_NO_SUCH_CAPCHA_ID": errors.WrongCaptchaID,
 	"WRONG_CAPTCHA_ID": errors.WrongCaptchaID,
 	"ERROR_IP_BANNED": errors.IPBanned,
-}
-
-interface Options {
-	timeout: number;
-	polling: number;
-};
-
-interface Proxy {
-	proxyType: "http" | "https" | "socks4" | "socks5";
-	proxyAddress: string;
-	proxyPort: number;
-	proxyLogin?: string; // Username
-	proxyPassword?: string;
 }
 
 interface Task {
@@ -43,15 +31,10 @@ interface Task {
 	cookies?: string; // Must be formatted for CapMonster
 }
 
-interface CaptchaOptions {
-	userAgent?: string;
-	cookies?: string; // Must be formatted for CapMonster
-}
-
-export default class CapMonster {
+export default class CapMonster implements CaptchaClient {
 	key: string;
 	options: Options;
-	client: Got;
+	private client: Got;
 
 	constructor(key: string, options: Options = { timeout: 60000, polling: 5000 }) {
 		this.client = got.extend({
@@ -61,7 +44,7 @@ export default class CapMonster {
 		this.options = options;
 	};
 
-	async reCaptchaV2(googleKey: string, pageURl: string, proxy?: Proxy, captchaOptions?: CaptchaOptions) {
+	async reCaptchaV2(googleKey: string, pageURl: string, proxy?: Proxy): Promise<string> {
 		let task: Task;
 
 		if (proxy === undefined) {
@@ -69,15 +52,13 @@ export default class CapMonster {
 				type: "NoCaptchaTaskProxyless",
 				websiteKey: googleKey,
 				websiteURL: pageURl,
-				...captchaOptions
 			}
 		} else {
 			task = {
 				type: "NoCaptchaTaskProxyless",
 				websiteKey: googleKey,
 				websiteURL: pageURl,
-				...proxy,
-				...captchaOptions
+				...proxy
 			}
 		}
 
