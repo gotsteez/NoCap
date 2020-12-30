@@ -1,17 +1,15 @@
 import got, { Got } from 'got';
 import delay from '../utils/delay';
 import errors, { CaptchaNotReady } from '../errors';
-
-interface Options {
-	timeout: number;
-	polling: number;
-};
+import { Proxy, Options, CaptchaClient } from '../utils/types';
 
 interface CaptchaOptions {
 	method: "userrecaptcha";
 	googlekey?: string;
 	pageurl?: string;
 	invisible?: string;
+	proxy?: string;
+	proxytype?: string;
 }
 
 const errorTranslation = {
@@ -39,7 +37,7 @@ const errorTranslation = {
 	"ERROR_TOKEN_EXPIRED": errors.TokenExpired,
 };
 
-export default class Client {
+export default class TwoCaptcha implements CaptchaClient {
 	options: Options;
 	client: Got;
 
@@ -60,12 +58,24 @@ export default class Client {
 		});
 	};
 
-	async reCaptchaV2(googleKey: string, pageURL: string) {
-		const options: CaptchaOptions = {
-			method: "userrecaptcha",
-			googlekey: googleKey,
-			pageurl: pageURL,
-		};
+	async reCaptchaV2(googleKey: string, pageURL: string, proxy?: Proxy): Promise<string> {
+		let options: CaptchaOptions;
+
+		if (proxy !== undefined) {
+			options = {
+				method: "userrecaptcha",
+				googlekey: googleKey,
+				pageurl: pageURL,
+				proxy: `${proxy.proxyLogin}:${proxy.proxyPassword}@${proxy.proxyAddress}:${proxy.proxyPort}`,
+				proxytype: proxy.proxyType.toUpperCase(),
+			};
+		} else {
+			options  = {
+				method: "userrecaptcha",
+				googlekey: googleKey,
+				pageurl: pageURL,
+			};
+		}
 
 		const id = await this.upload(options);
 		
@@ -89,7 +99,7 @@ export default class Client {
 		return text;
 	};
 
-	async upload(options: CaptchaOptions): Promise<string> {
+	private async upload(options: CaptchaOptions): Promise<string> {
 		const url = "https://2captcha.com/in.php";
 
 		interface response {
@@ -107,7 +117,7 @@ export default class Client {
 		};
 	};
 
-	async fetchResponse(id: string): Promise<string> {
+	private async fetchResponse(id: string): Promise<string> {
 		interface response {
 			status: number,
 			request: string,

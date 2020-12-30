@@ -1,11 +1,6 @@
 import TwoCaptcha  from './src/solvers/2captcha';
 import CapMonster from './src/solvers/CapMonster';
-import Manual from './src/solvers/Manual';
-
-interface Options {
-	timeout: number;
-	polling: number;
-};
+import { Options, CaptchaClient } from './src/utils/types';
 
 class NotYetImplemented extends Error {
 	constructor() {
@@ -15,14 +10,18 @@ class NotYetImplemented extends Error {
 	};
 };
 
-export default function launchSolver(service: "2Captcha" | "CapMonster" | "Manual", key: string, options?: Options) {
+export { 
+	TwoCaptcha, 
+	CapMonster,
+	CaptchaClient,
+};
+
+export default function launchSolver(service: "2Captcha" | "CapMonster", key: string, options?: Options): CaptchaClient {
 	switch (service) {
 		case "2Captcha":
 			return new TwoCaptcha(key, options);
 		case "CapMonster":
 			return new CapMonster(key, options);
-		case "Manual":
-			return new Manual(options);
 		default:
 			throw new NotYetImplemented();
 	};
