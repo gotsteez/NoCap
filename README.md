@@ -15,17 +15,27 @@ Examples of how to use the captcha wrapper
 
 ## Installation
 
-Wrapper is not available on `npm`, but is currently available via [yarn](https://yarnpkg.com/)
+To install with npm:
+
+```
+npm install node-nocap
+```
+
+or with [yarn](https://yarnpkg.com/):
+
+```
+yarn add node-nocap
+```
 
 ## Creating a new client
 
-`2Captcha` can be replaced
+`2Captcha` can be replaced with `CapMonster`, just assign the correct key.
 
 ```js
-import NoCap from "NoCap";
+import NoCap from "node-nocap";
 
 const apiKey = "";
-const client = new NoCap("2Captcha", key);
+const client = new NoCap("2Captcha", apiKey);
 ```
 
 ## Solving a ReCaptcha challenge
